@@ -9,3 +9,14 @@ C:\Users\boovi\source\repos\DragAndDropTest\DragAndDropTest\obj\Debug\DragAndDro
 C:\Users\boovi\source\repos\DragAndDropTest\DragAndDropTest\obj\Debug\DragAndDropTest.Window.resources
 C:\Users\boovi\source\repos\DragAndDropTest\DragAndDropTest\obj\Debug\DragAndDropTest.csprojAssemblyReference.cache
 C:\Users\boovi\source\repos\DragAndDropTest\DragAndDropTest\obj\Debug\DragAndDropTest.DialogueEditor.resources
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\bin\Debug\DragAndDropTest.exe.config
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\bin\Debug\DragAndDropTest.exe
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\bin\Debug\DragAndDropTest.pdb
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.csprojAssemblyReference.cache
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.DialogueEditor.resources
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.Window.resources
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.Properties.Resources.resources
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.csproj.GenerateResource.cache
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.csproj.CoreCompileInputs.cache
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.exe
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.pdb

@@ -43,6 +43,12 @@ namespace DragAndDropTest
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.StartBoxColorBTN = new System.Windows.Forms.ToolStripButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -88,7 +94,13 @@ namespace DragAndDropTest
             this.toolStripSeparator3,
             this.DialogueBoxColorBTN,
             this.toolStripSeparator4,
-            this.StartBoxColorBTN});
+            this.StartBoxColorBTN,
+            this.toolStripSeparator5,
+            this.toolStripButton2,
+            this.toolStripSeparator6,
+            this.toolStripButton3,
+            this.toolStripSeparator7,
+            this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1617, 27);
@@ -104,6 +116,7 @@ namespace DragAndDropTest
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(131, 24);
             this.toolStripButton1.Text = "Add Dialogue (D)";
+            this.toolStripButton1.ToolTipText = resources.GetString("toolStripButton1.ToolTipText");
             this.toolStripButton1.Click += new System.EventHandler(this.AddNewDialogue);
             // 
             // toolStripSeparator1
@@ -120,6 +133,7 @@ namespace DragAndDropTest
             this.AddStartBTN.Name = "AddStartBTN";
             this.AddStartBTN.Size = new System.Drawing.Size(98, 24);
             this.AddStartBTN.Text = "Add Start (S)";
+            this.AddStartBTN.ToolTipText = resources.GetString("AddStartBTN.ToolTipText");
             this.AddStartBTN.Click += new System.EventHandler(this.AddNewStart);
             // 
             // toolStripSeparator2
@@ -136,6 +150,8 @@ namespace DragAndDropTest
             this.GraphicsQualityBTN.Name = "GraphicsQualityBTN";
             this.GraphicsQualityBTN.Size = new System.Drawing.Size(137, 24);
             this.GraphicsQualityBTN.Text = "Graphics: Fancy (G)";
+            this.GraphicsQualityBTN.ToolTipText = "Alternates graphics quality. \r\nConnectors between nodes will be\r\ndrawn on smooth " +
+    "paths in fancy\r\nquality mode.";
             this.GraphicsQualityBTN.Click += new System.EventHandler(this.GraphicsQualityBTN_Click);
             // 
             // toolStripSeparator3
@@ -152,6 +168,8 @@ namespace DragAndDropTest
             this.DialogueBoxColorBTN.Name = "DialogueBoxColorBTN";
             this.DialogueBoxColorBTN.Size = new System.Drawing.Size(191, 24);
             this.DialogueBoxColorBTN.Text = "Dialogue Box Color (Alt D)";
+            this.DialogueBoxColorBTN.ToolTipText = "Adjusts the color of Dialogue Nodes.\r\n*note* works best with mid-tones and\r\ndarke" +
+    "r tones.";
             this.DialogueBoxColorBTN.Click += new System.EventHandler(this.DialogueBoxColorBTN_Click);
             // 
             // toolStripSeparator4
@@ -168,8 +186,60 @@ namespace DragAndDropTest
             this.StartBoxColorBTN.Name = "StartBoxColorBTN";
             this.StartBoxColorBTN.Size = new System.Drawing.Size(158, 24);
             this.StartBoxColorBTN.Text = "Start Box Color (Alt S)";
-            this.StartBoxColorBTN.ToolTipText = "Choose";
+            this.StartBoxColorBTN.ToolTipText = "Adjusts the color of Start Nodes.\r\n*note* works best with mid-tones and\r\ndarker t" +
+    "ones.\r\n";
             this.StartBoxColorBTN.Click += new System.EventHandler(this.StartBoxColorBTN_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 27);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(140, 24);
+            this.toolStripButton2.Text = "Graph Color (Alt G)";
+            this.toolStripButton2.ToolTipText = "Adjusts the color of the node-graph\r\nbackground";
+            this.toolStripButton2.Click += new System.EventHandler(this.GraphColor);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 27);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(138, 24);
+            this.toolStripButton3.Text = "Editor Color (Alt E)";
+            this.toolStripButton3.ToolTipText = "Adjusts the background color of the\r\nnode editor on the left panel.";
+            this.toolStripButton3.Click += new System.EventHandler(this.EditorColor);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 27);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(167, 24);
+            this.toolStripButton4.Text = "Connector Color (Alt C)";
+            this.toolStripButton4.ToolTipText = "Adjusts the color of the connecting \r\nlines between nodes.";
+            this.toolStripButton4.Click += new System.EventHandler(this.ConnectorColor);
             // 
             // Window
             // 
@@ -209,6 +279,12 @@ namespace DragAndDropTest
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.ToolStripButton DialogueBoxColorBTN;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
     }
 }
 

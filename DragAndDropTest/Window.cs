@@ -14,10 +14,13 @@ namespace DragAndDropTest
     public partial class Window : Form
     {
         public static Window FormReference;
-        public static Color StartBoxCOL, DialogueBoxCOL;
+        public static Color StartBoxCOL, DialogueBoxCOL, graphColor, editorColor, connectorColor;
         public Window()
         {
             GraphicsFancy = true;
+            graphColor = System.Drawing.Color.DarkSlateGray;
+            editorColor = System.Drawing.Color.DarkGray;
+            connectorColor = Color.Black;
             StartBoxCOL = Color.FromArgb(80, 0, 0);
             DialogueBoxCOL = Color.FromArgb(45, 0, 60);
             InitializeComponent();
@@ -30,7 +33,7 @@ namespace DragAndDropTest
                 {
                     Thread.Sleep(32);
                     var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children.Count() > 0).Select(x => x as DragPanel).ToList();
-                    graphics.FillRectangle(new SolidBrush(Color.DarkSlateGray), new Rectangle(new Point(0, 0), splitContainer1.Size));
+                    graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
                     try
                     {
                         foreach (DragPanel Moveable in list)
@@ -45,13 +48,13 @@ namespace DragAndDropTest
                                     int half;
                                     point2 = point1 + new Size(0, half = (point4.Y - point1.Y) / 2);
                                     point3 = point4 - new Size(0, half);
-                                    graphics.DrawBezier(new Pen(Color.Black, 2), point1, point2, point3, point4);
+                                    graphics.DrawBezier(new Pen(connectorColor, 2), point1, point2, point3, point4);
                                 } else
                                 {
                                     Point point1, point2;
                                     point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
                                     point2 = child.Location + new Size(child.Width / 2, 0);
-                                    graphics.DrawLine(new Pen(Color.Black, 2), point1, point2);
+                                    graphics.DrawLine(new Pen(connectorColor, 2), point1, point2);
                                 }
                             }
                         }
@@ -238,6 +241,28 @@ namespace DragAndDropTest
         {
             return this.splitContainer1.Panel2.Height;
         }
+
+        private void GraphColor(object sender, EventArgs e)
+        {
+            var c = new ColorDialog();
+            c.ShowDialog();
+            graphColor = c.Color;
+        }
+
+        private void EditorColor(object sender, EventArgs e)
+        {
+            var c = new ColorDialog();
+            c.ShowDialog();
+            getSplitPanel1().BackColor = editorColor = c.Color;
+        }
+
+        private void ConnectorColor(object sender, EventArgs e)
+        {
+            var c = new ColorDialog();
+            c.ShowDialog();
+            connectorColor = c.Color;
+        }
+
         public SplitterPanel getSplitPanel2()
         {
             return this.splitContainer1.Panel2;
