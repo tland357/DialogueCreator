@@ -15,6 +15,7 @@ namespace DragAndDropTest
         public Button WriteToFileBTN, FileOutputBTN, FileInputBTN;
         public GroupBox WriteToFileGB, FileOutputGB, FileInputGB;
         public TextBox FileOutputTXT;
+		private DragPanel children;
         public StartDialogueDragPanel()
         {
             
@@ -77,7 +78,25 @@ namespace DragAndDropTest
             WriteToFileBTN.Click += new EventHandler(SaveDialogue);
             FileInputBTN.Click += new EventHandler(LoadDialogue);
         }
-        private void OpenFolder(object sender, EventArgs e)
+		public override void AddChildren(DragPanel p)
+		{
+			children = p;
+		}
+		public override void childRemove(DragPanel p)
+		{
+			children = null;
+		}
+		public override void ClearChildren()
+		{
+			children = null;
+		}
+		public override DragPanel[] Children()
+		{
+			DragPanel[] child = new DragPanel[1];
+			child[0] = children;
+			return child;
+		}
+		private void OpenFolder(object sender, EventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = "Dialogue File (*.dlg) | All Files (*.*)";
@@ -109,7 +128,7 @@ namespace DragAndDropTest
             int index = 0;
             Dictionary<DialogueDragPanel, int> indices = new Dictionary<DialogueDragPanel, int>();
             HashSet<DialogueDragPanel> printed = new HashSet<DialogueDragPanel>();
-            var startNode = (Children[0] as DialogueDragPanel);
+            var startNode = (Children()[0] as DialogueDragPanel);
             indices.Add(startNode, index++);
             recursiveHelper(file, startNode, indices, printed, ref index);
         }
@@ -121,7 +140,7 @@ namespace DragAndDropTest
             file.Write("<");
             bool comma = false;
             string s = (string)panel;
-            foreach (DialogueDragPanel child in panel.Children.Select(x => x as DialogueDragPanel)) {
+            foreach (DialogueDragPanel child in panel.Children().Select(x => x as DialogueDragPanel)) {
                 if (comma)
                 {
                     file.Write(",");
@@ -140,7 +159,7 @@ namespace DragAndDropTest
                 }
             }
             file.WriteLine(">\n");
-            foreach (DialogueDragPanel child in panel.Children.Where(x => !printed.Contains(x)))
+            foreach (DialogueDragPanel child in panel.Children().Where(x => !printed.Contains(x)))
             {
                 recursiveHelper(file, child, indices, printed, ref index);
             }
@@ -148,7 +167,7 @@ namespace DragAndDropTest
         //LoadDialogue
         private void LoadDialogue(object sender, EventArgs e)
         {
-            if (this.Children.Count > 0) { MessageBox.Show("Cannot load file to a start node with connections"); return; }
+            if (this.Children().Count(x => x != null) > 0) { MessageBox.Show("Cannot load file to a start node with connections"); return; }
             OpenFileDialog dialog = new OpenFileDialog()
             {
                 Filter = "Dialogue Files (*.dlg)|*.dlg|All Files (*.*) | *.*",
@@ -162,8 +181,8 @@ namespace DragAndDropTest
                     strList.Add(file.ReadLine());
                 }
             }
-            this.Children.Clear();
-            this.Children.Add(GetTree(strList));
+			this.ClearChildren();
+            this.AddChildren(GetTree(strList));
         }
         private DialogueDragPanel GetTree(List<string> strList)
         {
@@ -194,7 +213,7 @@ namespace DragAndDropTest
                     foreach (string s in strList[i + 7].Replace("<","").Replace(">","").Split(','))
                     {
                         if (!string.IsNullOrWhiteSpace(s))
-                            tracker[index].Children.Add(tracker[int.Parse(s)]);
+                            tracker[index].AddChildren(tracker[int.Parse(s)]);
                     }
                 }
             }

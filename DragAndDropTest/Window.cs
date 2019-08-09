@@ -14,31 +14,46 @@ namespace DragAndDropTest
     public partial class Window : Form
     {
         public static Window FormReference;
-        public static Color StartBoxCOL, DialogueBoxCOL, graphColor, editorColor, connectorColor;
-        public Window()
+        public static Color StartBoxCOL, DialogueBoxCOL, graphColor, editorColor, connectorColor, SplitterBoxCOL;
+		/*protected override CreateParams CreateParams
+		{
+			get
+			{
+				CreateParams handleParam = base.CreateParams;
+				handleParam.ExStyle |= 0x02000000;   // WS_EX_COMPOSITED       
+				return handleParam;
+			}
+		}*/
+		public Window()
         {
-            GraphicsFancy = true;
+			GraphicsFancy = true;
             graphColor = System.Drawing.Color.DarkSlateGray;
             editorColor = System.Drawing.Color.DarkGray;
             connectorColor = Color.Black;
             StartBoxCOL = Color.FromArgb(80, 0, 0);
             DialogueBoxCOL = Color.FromArgb(45, 0, 60);
+			SplitterBoxCOL = Color.FromArgb(0, 80, 0);
             InitializeComponent();
-            FormReference = this;
-            Moveables = new List<Control>();
+			FormReference = this;
             graphics = splitContainer1.Panel2.CreateGraphics();
             ThreadStart start = new ThreadStart(() =>
             {
                 while (true)
                 {
-                    Thread.Sleep(32);
-                    var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children.Count() > 0).Select(x => x as DragPanel).ToList();
-                    graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
+                    Thread.Sleep(8);
+					BufferedGraphicsContext currentContext;
+					BufferedGraphics myBuffer;
+					currentContext = BufferedGraphicsManager.Current;
+					myBuffer = currentContext.Allocate(graphics, splitContainer1.Panel2.DisplayRectangle);
+					splitContainer1.Panel2.ResumeLayout();
+					splitContainer1.Panel2.SuspendLayout();
+                    var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children().Count(z => z != null) > 0).Select(x => x as DragPanel).ToList();
+                    myBuffer.Graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
                     try
                     {
                         foreach (DragPanel Moveable in list)
                         {
-                            foreach (var child in Moveable.Children)
+                            foreach (var child in Moveable.Children().Where(x => x != null))
                             {
                                 if (GraphicsFancy)
                                 {
@@ -48,20 +63,21 @@ namespace DragAndDropTest
                                     int half;
                                     point2 = point1 + new Size(0, half = (point4.Y - point1.Y) / 2);
                                     point3 = point4 - new Size(0, half);
-                                    graphics.DrawBezier(new Pen(connectorColor, 2), point1, point2, point3, point4);
+                                    myBuffer.Graphics.DrawBezier(new Pen(connectorColor, 2), point1, point2, point3, point4);
                                 } else
                                 {
                                     Point point1, point2;
                                     point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
                                     point2 = child.Location + new Size(child.Width / 2, 0);
-                                    graphics.DrawLine(new Pen(connectorColor, 2), point1, point2);
+                                    myBuffer.Graphics.DrawLine(new Pen(connectorColor, 2), point1, point2);
                                 }
                             }
                         }
-                    }
+						myBuffer.Render();
+					}
                     catch (InvalidOperationException ex)
                     {
-                        continue;
+						continue;
                     }
                 }
             });
@@ -99,7 +115,10 @@ namespace DragAndDropTest
                     break;
                 case Keys.G:
                     GraphicsQualityBTN_Click(null, null);
-                    return;                    
+                    return;
+				case Keys.F:
+					c = new SplitterDragPanel();
+					break;
                 default:
                     return;
             }
@@ -134,6 +153,10 @@ namespace DragAndDropTest
         {
             if (e.Button == MouseButtons.Middle)
                 previous = MousePosition;
+			else if (e.Button == MouseButtons.Left)
+			{
+				(sender as Control).Focus();
+			}
         }
 
         private void DragEnd(object sender, MouseEventArgs e)
@@ -161,9 +184,9 @@ namespace DragAndDropTest
         {
             foreach (DragPanel moveable in Moveables)
             {
-                if (moveable.Children.Contains(p))
+                if (moveable.Children().Contains(p))
                 {
-                    moveable.Children.Remove(p);
+                    moveable.childRemove(p);
                     
                 }
             }
@@ -202,7 +225,7 @@ namespace DragAndDropTest
         private void DialogueBoxColorBTN_Click(object sender, EventArgs e)
         {
             ColorDialog cd = new ColorDialog();
-            cd.ShowDialog();
+			if (cd.ShowDialog() != DialogResult.OK) return;
             DialogueBoxCOL = cd.Color;
             foreach (DialogueDragPanel c in Moveables.Where(x => x is DialogueDragPanel))
             {
@@ -213,8 +236,8 @@ namespace DragAndDropTest
         private void StartBoxColorBTN_Click(object sender, EventArgs e)
         {
             ColorDialog cd = new ColorDialog();
-            cd.ShowDialog();
-            StartBoxCOL = cd.Color;
+			if (cd.ShowDialog() != DialogResult.OK) return;
+			StartBoxCOL = cd.Color;
             foreach (StartDialogueDragPanel c in Moveables.Where(x => x is StartDialogueDragPanel))
             {
                 c.UpdateColor();
@@ -237,7 +260,12 @@ namespace DragAndDropTest
             return this.splitContainer1.Panel2.Width;
         }
 
-        public int getGraphHeight()
+		private void AddSplitter(object sender, EventArgs e)
+		{
+			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.F));
+		}
+
+		public int getGraphHeight()
         {
             return this.splitContainer1.Panel2.Height;
         }
@@ -245,27 +273,43 @@ namespace DragAndDropTest
         private void GraphColor(object sender, EventArgs e)
         {
             var c = new ColorDialog();
-            c.ShowDialog();
-            graphColor = c.Color;
+			if (c.ShowDialog() != DialogResult.OK) return;
+			graphColor = c.Color;
         }
 
         private void EditorColor(object sender, EventArgs e)
         {
             var c = new ColorDialog();
-            c.ShowDialog();
-            getSplitPanel1().BackColor = editorColor = c.Color;
+			if (c.ShowDialog() != DialogResult.OK) return;
+			getSplitPanel1().BackColor = editorColor = c.Color;
         }
 
         private void ConnectorColor(object sender, EventArgs e)
         {
             var c = new ColorDialog();
-            c.ShowDialog();
-            connectorColor = c.Color;
+			if (c.ShowDialog() != DialogResult.OK) return;
+			connectorColor = c.Color;
         }
 
         public SplitterPanel getSplitPanel2()
         {
             return this.splitContainer1.Panel2;
         }
-    }
+
+		public static void SetDoubleBuffered(System.Windows.Forms.Control c)
+		{
+			//Taxes: Remote Desktop Connection and painting
+			//http://blogs.msdn.com/oldnewthing/archive/2006/01/03/508694.aspx
+			if (System.Windows.Forms.SystemInformation.TerminalServerSession)
+				return;
+
+			System.Reflection.PropertyInfo aProp =
+				  typeof(System.Windows.Forms.Control).GetProperty(
+						"DoubleBuffered",
+						System.Reflection.BindingFlags.NonPublic |
+						System.Reflection.BindingFlags.Instance);
+
+			aProp.SetValue(c, true, null);
+		}
+	}
 }

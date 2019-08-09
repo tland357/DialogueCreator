@@ -14,6 +14,7 @@ namespace DragAndDropTest
         public string Sprite;
         public string EntryText;
         public string Dialogue;
+		private DragPanel children;
         GroupBox speakerGB, spriteGB, entryTextGB, dialogueGB;
         RichTextBox speakerTXT, spriteTXT, entryTextTXT, dialogueTXT;
         public DialogueDragPanel()
@@ -25,7 +26,25 @@ namespace DragAndDropTest
         {
             return "[\n" + p.Speaker + "\n" + p.Sprite + "\n" + p.EntryText.Replace("\n", "\\") + "\n" + p.Dialogue.Replace("\n", "\\") + "\n]";
         }
-        public override void Edit()
+		public override void ClearChildren()
+		{
+			children = null;
+		}
+		public override void AddChildren(DragPanel p)
+		{
+			children = p;
+		}
+		public override void childRemove(DragPanel p)
+		{
+			children = null;
+		}
+		public override DragPanel[] Children()
+		{
+			DragPanel[] child = new DragPanel[1];
+			child[0] = children;
+			return child;
+		}
+		public override void Edit()
         {
             var panel = FormReference.getSplitPanel1();
             panel.Controls.Add(speakerGB = new GroupBox()
