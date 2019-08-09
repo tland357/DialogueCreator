@@ -15,6 +15,7 @@ namespace DragAndDropTest
     {
         public static Window FormReference;
         public static Color StartBoxCOL, DialogueBoxCOL, graphColor, editorColor, connectorColor;
+
         public Window()
         {
             GraphicsFancy = true;
@@ -149,19 +150,23 @@ namespace DragAndDropTest
             if (e.Button == MouseButtons.Middle)
             {
                 var transform = MousePosition - new Size(previous);
+				splitContainer1.Panel2.SuspendLayout();
                 foreach (var moveable in Moveables)
                     moveable.Location -= new Size(transform);
-            }
-        }
+				splitContainer1.Panel2.ResumeLayout();
+			}
+		}
 
         private void DragContinue(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Middle)
             {
                 var transform = MousePosition - new Size(previous);
-                foreach (var moveable in Moveables)
+				splitContainer1.Panel2.SuspendLayout();
+				foreach (var moveable in Moveables)
                     moveable.Location += new Size(transform);
-                previous += new Size(transform);
+				splitContainer1.Panel2.ResumeLayout();
+				previous += new Size(transform);
             }
         }
 
