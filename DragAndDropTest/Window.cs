@@ -29,42 +29,50 @@ namespace DragAndDropTest
             graphics = splitContainer1.Panel2.CreateGraphics();
             ThreadStart start = new ThreadStart(() =>
             {
-                while (true)
-                {
-                    Thread.Sleep(32);
-                    var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children.Count() > 0).Select(x => x as DragPanel).ToList();
-                    graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
-                    try
-                    {
-                        foreach (DragPanel Moveable in list)
-                        {
-                            foreach (var child in Moveable.Children)
-                            {
-                                if (GraphicsFancy)
-                                {
-                                    Point point1, point2, point3, point4;
-                                    point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
-                                    point4 = child.Location + new Size(child.Width / 2, 0);
-                                    int half;
-                                    point2 = point1 + new Size(0, half = (point4.Y - point1.Y) / 2);
-                                    point3 = point4 - new Size(0, half);
-                                    graphics.DrawBezier(new Pen(connectorColor, 2), point1, point2, point3, point4);
-                                } else
-                                {
-                                    Point point1, point2;
-                                    point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
-                                    point2 = child.Location + new Size(child.Width / 2, 0);
-                                    graphics.DrawLine(new Pen(connectorColor, 2), point1, point2);
-                                }
-                            }
-                        }
-                    }
-                    catch (InvalidOperationException ex)
-                    {
-                        continue;
-                    }
-                }
-            });
+				while (true)
+				{
+					Thread.Sleep(8);
+					BufferedGraphicsContext currentContext;
+					BufferedGraphics myBuffer;
+					currentContext = BufferedGraphicsManager.Current;
+					myBuffer = currentContext.Allocate(graphics, splitContainer1.Panel2.DisplayRectangle);
+					splitContainer1.Panel2.ResumeLayout();
+					splitContainer1.Panel2.SuspendLayout();
+					var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children.Count(z => z != null) > 0).Select(x => x as DragPanel).ToList();
+					myBuffer.Graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
+					try
+					{
+						foreach (DragPanel Moveable in list)
+						{
+							foreach (var child in Moveable.Children.Where(x => x != null))
+							{
+								if (GraphicsFancy)
+								{
+									Point point1, point2, point3, point4;
+									point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
+									point4 = child.Location + new Size(child.Width / 2, 0);
+									int half;
+									point2 = point1 + new Size(0, half = (point4.Y - point1.Y) / 2);
+									point3 = point4 - new Size(0, half);
+									myBuffer.Graphics.DrawBezier(new Pen(connectorColor, 2), point1, point2, point3, point4);
+								}
+								else
+								{
+									Point point1, point2;
+									point1 = Moveable.Location + new Size(Moveable.Width / 2, Moveable.Height);
+									point2 = child.Location + new Size(child.Width / 2, 0);
+									myBuffer.Graphics.DrawLine(new Pen(connectorColor, 2), point1, point2);
+								}
+							}
+						}
+						myBuffer.Render();
+					}
+					catch (InvalidOperationException ex)
+					{
+						continue;
+					}
+				}
+			});
             t = new Thread(start);
             t.Start();
             this.FormClosing += new FormClosingEventHandler(ClosingThread);
