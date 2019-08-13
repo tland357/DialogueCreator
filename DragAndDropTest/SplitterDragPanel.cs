@@ -37,6 +37,8 @@ namespace DragAndDropTest
 		}
 		public override DragPanel[] Children()
 		{
+			if (children == null)
+				return new DragPanel[2];
 			return children;
 		}
 		public override void AddChildren(DragPanel p)

@@ -108,13 +108,15 @@ namespace DragAndDropTest
         //Sprotected abstract Color GetBackColor();
         public void dragContinue(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                var transform = MousePosition - new Size(previous);
-                this.Location += new Size(transform);
-                previous += new Size(transform);
-            }
-
+			if (dragging)
+			{
+				if (e.Button == MouseButtons.Left)
+				{
+					var transform = MousePosition - new Size(previous);
+					this.Location += new Size(transform);
+					previous += new Size(transform);
+				}
+			}
         }
         public void dragEnd(object sender, MouseEventArgs e)
         {
@@ -219,30 +221,39 @@ namespace DragAndDropTest
         public abstract void Edit();
         public void UpdateAll()
         {
-            foreach (DragPanel panel in FormReference.Moveables)
-            {
-                if (panel.Children().Count(x => x != null) > 0)
-                {
-                    panel.removeChildren.Enabled = true;
-                } else
-                {
-                    panel.removeChildren.Enabled = false;
-                }
-                if (FormReference.Moveables.Any(x => (x as DragPanel).Children().Contains(panel)))
-                {
-                    panel.topDisconnecter.Enabled = true;
-                } else
-                {
-                    panel.topDisconnecter.Enabled = false;
-                }
-                if (panel == Foc || panel.Children().Contains(Foc) || Foc.Children().Contains(panel) || FormReference.Moveables.Count <= 1)
-                {
-                    panel.topConnecter.Enabled = false;
-                } else
-                {
-                    panel.topConnecter.Enabled = true;
-                }
-            }
+			foreach (DragPanel panel in FormReference.Moveables.Where(x => x != null))
+			{
+				if (panel != null)
+				{
+					if (panel.Children().Count(x => x != null) > 0)
+					{
+						panel.removeChildren.Enabled = true;
+					}
+					else
+					{
+						panel.removeChildren.Enabled = false;
+					}
+					if (FormReference.Moveables.Any(x => (x as DragPanel).Children().Contains(panel)))
+					{
+						panel.topDisconnecter.Enabled = true;
+					}
+					else
+					{
+						panel.topDisconnecter.Enabled = false;
+					}
+					if (Foc.Children() != null && panel.Children() != null)
+					{
+						if (panel == Foc || panel.Children().Contains(Foc) || Foc.Children().Contains(panel) || FormReference.Moveables.Count <= 1)
+						{
+							panel.topConnecter.Enabled = false;
+						}
+						else
+						{
+							panel.topConnecter.Enabled = true;
+						}
+					}
+				}
+			}
         }
     }
 }

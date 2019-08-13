@@ -8,11 +8,54 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
+using System.Drawing.Imaging;
 
 namespace DragAndDropTest
 {
     public partial class Window : Form
     {
+		public class Character
+		{
+			public Character(string name, string fileDirectory)
+			{
+				Name = name;
+				Sprites = new Dictionary<string, Image>();
+				Directory = fileDirectory;
+				ReInit();
+			}
+			public string Name;
+			public Dictionary<string, Image> Sprites;
+			public string Directory;
+			public void Add(string s, Image b)
+			{
+				Sprites.Add(s, b);
+			}
+			public Image this[string s]
+			{
+				get { return Sprites[s]; }
+				set { Sprites[s] = value; }
+			}
+			public void ReInit()
+			{
+				string helper = Directory.Remove(Directory.Length - Name.Length - 5);
+				string[] files = System.IO.Directory.GetFiles(helper, "*.png");
+				Sprites.Clear();
+				foreach (var file in files)
+				{
+					string f = file;
+					while (f.Contains('\\'))
+					{
+						f = f.Remove(0, 1);
+					}
+					Add(f.Remove(f.Length - 4), Image.FromFile(file));
+				}
+				using (System.IO.StreamWriter file = new System.IO.StreamWriter(Directory))
+				{
+					file.WriteLine(Name);
+					foreach (var file2 in files) file.WriteLine(file2);
+				}
+			}
+		}
         public static Window FormReference;
         public static Color StartBoxCOL, DialogueBoxCOL, graphColor, editorColor, connectorColor, SplitterBoxCOL;
 		/*protected override CreateParams CreateParams
@@ -24,6 +67,7 @@ namespace DragAndDropTest
 				return handleParam;
 			}
 		}*/
+		public List<Character> CharactersList;
 		public Window()
         {
 			GraphicsFancy = true;
@@ -35,7 +79,10 @@ namespace DragAndDropTest
 			SplitterBoxCOL = Color.FromArgb(0, 80, 0);
             InitializeComponent();
 			FormReference = this;
+			splitContainer1.Panel2.AllowDrop = true;
             graphics = splitContainer1.Panel2.CreateGraphics();
+			Moveables = new List<Control>();
+			CharactersList = new List<Character>();
             ThreadStart start = new ThreadStart(() =>
             {
                 while (true)
@@ -45,8 +92,6 @@ namespace DragAndDropTest
 					BufferedGraphics myBuffer;
 					currentContext = BufferedGraphicsManager.Current;
 					myBuffer = currentContext.Allocate(graphics, splitContainer1.Panel2.DisplayRectangle);
-					splitContainer1.Panel2.ResumeLayout();
-					splitContainer1.Panel2.SuspendLayout();
                     var list = Moveables.Where(x => x is DragPanel).Where(x => (x as DragPanel).Children().Count(z => z != null) > 0).Select(x => x as DragPanel).ToList();
                     myBuffer.Graphics.FillRectangle(new SolidBrush(graphColor), new Rectangle(new Point(0, 0), splitContainer1.Size));
                     try
@@ -114,11 +159,34 @@ namespace DragAndDropTest
                     c = new DialogueDragPanel();
                     break;
                 case Keys.G:
-                    GraphicsQualityBTN_Click(null, null);
+					if (e.Modifiers == Keys.Alt)
+						GraphColor(null, null);
+					else
+						GraphicsQualityBTN_Click(null, null);
                     return;
+				case Keys.C:
+					for (int i = 0; i < CharactersList.Count; i += 1)
+					{
+						CharactersList[i].ReInit();
+					}
+					return;
 				case Keys.F:
 					c = new SplitterDragPanel();
 					break;
+				case Keys.N:
+					if (e.Modifiers == Keys.Alt)
+					{
+						ConnectorColor(null, null);
+					} else
+					{
+						CharacterEditor editor = new CharacterEditor(this, null);
+						editor.Show();
+					}
+					return;
+				case Keys.E:
+					if (e.Modifiers == Keys.Alt)
+						EditorColor(null, null);
+					return;
                 default:
                     return;
             }
@@ -195,14 +263,20 @@ namespace DragAndDropTest
 
         private void AddNewDialogue(object sender, EventArgs e)
         {
-            Cursor.Position = splitContainer1.Panel2.Location + new Size(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
+			Random r = new Random();
+			var pos = Cursor.Position;
+			Cursor.Position = splitContainer1.Panel2.Location + new Size(r.Next(splitContainer1.Panel2.Width - 150) + 75, r.Next(splitContainer1.Panel2.Height - 150) + 75);
             SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.D));
+			Cursor.Position = pos;
         }
         private void AddNewStart(object sender, EventArgs e)
         {
-            Cursor.Position = splitContainer1.Panel2.Location + new Size(splitContainer1.Panel2.Width / 2, splitContainer1.Panel2.Height / 2);
-            SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.S));
-        }
+			Random r = new Random();
+			var pos = Cursor.Position;
+			Cursor.Position = splitContainer1.Panel2.Location + new Size(r.Next(splitContainer1.Panel2.Width - 150) + 75, r.Next(splitContainer1.Panel2.Height - 150) + 75);
+			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.S));
+			Cursor.Position = pos;
+		}
 
         public void DeleteWidget(Control d)
         {
@@ -262,7 +336,11 @@ namespace DragAndDropTest
 
 		private void AddSplitter(object sender, EventArgs e)
 		{
+			Random r = new Random();
+			var pos = Cursor.Position;
+			Cursor.Position = splitContainer1.Panel2.Location + new Size(r.Next(splitContainer1.Panel2.Width - 150) + 75, r.Next(splitContainer1.Panel2.Height - 150) + 75);
 			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.F));
+			Cursor.Position = pos;
 		}
 
 		public int getGraphHeight()
@@ -270,7 +348,57 @@ namespace DragAndDropTest
             return this.splitContainer1.Panel2.Height;
         }
 
-        private void GraphColor(object sender, EventArgs e)
+		private void ToolStripButton6_Click(object sender, EventArgs e)
+		{
+			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.C));
+		}
+
+		private void ToolStripButton7_DropDownOpened(object sender, EventArgs e)
+		{
+
+		}
+
+		private void DragFileIn(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.All;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void DropFile(object sender, DragEventArgs e)
+		{
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+			foreach (string file in files.Where(x => x.EndsWith(".chr")))
+			{
+				string name;
+				List<string> fileList = new List<string>();
+				using (System.IO.StreamReader reader = new System.IO.StreamReader(file))
+				{
+					name = reader.ReadLine();
+					while (!reader.EndOfStream)
+					{
+						fileList.Add(reader.ReadLine());
+					}
+				}
+				Character c = new Character(name, file);
+				
+				this.CharactersList.Add(c);
+				MessageBox.Show("Character Added: " + c.Name);
+			}
+		}
+
+		private void ToolStripButton8_Click(object sender, EventArgs e)
+		{
+			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.N));
+		}
+
+		private void ToolStripButton6_Click_1(object sender, EventArgs e)
+		{
+			SplitContainer1_Panel2_PreviewKeyDown(null, new PreviewKeyDownEventArgs(Keys.C));
+		}
+
+		private void GraphColor(object sender, EventArgs e)
         {
             var c = new ColorDialog();
 			if (c.ShowDialog() != DialogResult.OK) return;

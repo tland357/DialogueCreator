@@ -197,8 +197,6 @@ namespace DragAndDropTest
                     int index = int.Parse(str.Replace("(", "").Replace(")", ""));
                     tracker.Add(index, panel);
                     i += 2;
-                    panel.Speaker = strList[i];
-                    panel.Sprite = strList[++i];
                     panel.EntryText = strList[++i].Replace("\\", "\n");
                     panel.Dialogue = strList[++i].Replace("\\", "\n");
                     panel.Location = new Point(r.Next(FormReference.getGraphWidth()), r.Next(FormReference.getGraphHeight()));

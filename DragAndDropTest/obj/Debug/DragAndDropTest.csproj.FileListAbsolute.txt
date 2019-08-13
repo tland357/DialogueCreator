@@ -20,3 +20,4 @@ C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\D
 C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.csproj.CoreCompileInputs.cache
 C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.exe
 C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.pdb
+C:\Users\boovi\Source\Repos\tland357\DialogueCreator\DragAndDropTest\obj\Debug\DragAndDropTest.CharacterEditor.resources
