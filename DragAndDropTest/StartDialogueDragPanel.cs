@@ -134,35 +134,43 @@ namespace DragAndDropTest
         }
         private void recursiveHelper(StreamWriter file, DialogueDragPanel panel, Dictionary<DialogueDragPanel, int> indices, HashSet<DialogueDragPanel> printed, ref int index)
         {
-            file.WriteLine("(" + indices[panel] + ")");
-            file.WriteLine((string)panel);
-            printed.Add(panel);
-            file.Write("<");
-            bool comma = false;
-            string s = (string)panel;
-            foreach (DialogueDragPanel child in panel.Children().Select(x => x as DialogueDragPanel)) {
-                if (comma)
-                {
-                    file.Write(",");
-                }
-                else
-                {
-                    comma = true;
-                }
-                if (indices.ContainsKey(child))
-                {
-                    file.Write(indices[child]);
-                } else
-                {
-                    file.Write(index);
-                    indices.Add(child, index++);
-                }
-            }
-            file.WriteLine(">\n");
-            foreach (DialogueDragPanel child in panel.Children().Where(x => !printed.Contains(x)))
-            {
-                recursiveHelper(file, child, indices, printed, ref index);
-            }
+			if (panel != null)
+			{
+				file.Write(indices[panel].ToString() + ';');
+				file.Write((string)panel);
+				printed.Add(panel);
+				file.Write("");
+				bool comma = false;
+				string s = (string)panel;
+				foreach (DialogueDragPanel child in panel.Children().Select(x => x as DialogueDragPanel))
+				{
+					if (child != null)
+					{
+						if (comma)
+						{
+							file.Write(",");
+						}
+						else
+						{
+							comma = true;
+						}
+						if (indices.ContainsKey(child))
+						{
+							file.Write(indices[child]);
+						}
+						else
+						{
+							file.Write(index);
+							indices.Add(child, index++);
+						}
+					}
+				}
+				file.Write('\n');
+				foreach (DialogueDragPanel child in panel.Children().Where(x => !printed.Contains(x)))
+				{
+					recursiveHelper(file, child, indices, printed, ref index);
+				}
+			}
         }
         //LoadDialogue
         private void LoadDialogue(object sender, EventArgs e)
@@ -172,7 +180,7 @@ namespace DragAndDropTest
             {
                 Filter = "Dialogue Files (*.dlg)|*.dlg|All Files (*.*) | *.*",
             };
-            dialog.ShowDialog();
+			if (dialog.ShowDialog() != DialogResult.OK) return;
             List<string> strList = new List<string>();
             using (StreamReader file = new StreamReader(dialog.FileName))
             {
@@ -190,30 +198,27 @@ namespace DragAndDropTest
             Random r = new Random();
             for (int i = 0; i < strList.Count; i += 1)
             {
-                string str = strList[i];
-                if (str.StartsWith("("))
-                {
-                    DialogueDragPanel panel = new DialogueDragPanel();
-                    int index = int.Parse(str.Replace("(", "").Replace(")", ""));
-                    tracker.Add(index, panel);
-                    i += 2;
-                    panel.EntryText = strList[++i].Replace("\\", "\n");
-                    panel.Dialogue = strList[++i].Replace("\\", "\n");
-                    panel.Location = new Point(r.Next(FormReference.getGraphWidth()), r.Next(FormReference.getGraphHeight()));
-                }
+                var strs = strList[i].Split(";".ToCharArray(), StringSplitOptions.None);
+				DialogueDragPanel panel = new DialogueDragPanel();
+				tracker.Add(int.Parse(strs[0]), panel);
+				if (FormReference.CharactersList.Any(x => x.Name == strs[1])) {
+					panel.Speaker = FormReference.CharactersList.First(x => x.Name == strs[1]);
+					if (panel.Speaker.Sprites.ContainsKey(strs[2]))
+					{
+						panel.Sprite = strs[2];
+					}
+				}
+				panel.EntryText = strs[3];
+				panel.Dialogue = strs[4];
             }
             for (int i = 0; i < strList.Count; i += 1)
             {
-                
-                if (strList[i].StartsWith("("))
-                {
-                    int index = int.Parse(strList[i].Replace("(", "").Replace(")", ""));
-                    foreach (string s in strList[i + 7].Replace("<","").Replace(">","").Split(','))
-                    {
-                        if (!string.IsNullOrWhiteSpace(s))
-                            tracker[index].AddChildren(tracker[int.Parse(s)]);
-                    }
-                }
+				var strs = strList[i].Split(";".ToCharArray(), StringSplitOptions.None);
+				
+				foreach (var str in strs[5].Split(",".ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
+				{
+					tracker[int.Parse(strs[0])].AddChildren(tracker[int.Parse(str)]);
+				}
             }
             foreach (var panel in tracker.Values)
             {

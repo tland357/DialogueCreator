@@ -27,7 +27,7 @@ namespace DragAndDropTest
         }
         public static explicit operator string(DialogueDragPanel p)
         {
-            return "[\n" + p.Speaker.Name + "\n" + p.Sprite + "\n" + p.EntryText.Replace("\n", "\\") + "\n" + p.Dialogue.Replace("\n", "\\") + "\n]";
+            return p.Speaker.Name + ";" + p.Sprite + ";" + p.EntryText.Replace("\n", "\\") + ";" + p.Dialogue.Replace("\n", "\\") + ";";
         }
 		public override void ClearChildren()
 		{
@@ -86,13 +86,17 @@ namespace DragAndDropTest
                 });
                 spriteCBB.TextChanged += new EventHandler(SpriteChanged);
 				spriteCBB.DropDown += new EventHandler(ShowSprites);
-			panel.Controls.Add(spritePB = new PictureBox()
+			try
 			{
-				Location = new Point(5, 545),
-				Image = Speaker?.Sprites?[Sprite],
-				SizeMode = PictureBoxSizeMode.Zoom,
-				Size = new Size(panel.Width - 10, panel.Width - 10),
-			});
+				panel.Controls.Add(spritePB = new PictureBox()
+				{
+
+					Location = new Point(5, 545),
+					Image = Speaker?.Sprites?[Sprite],
+					SizeMode = PictureBoxSizeMode.Zoom,
+					Size = new Size(panel.Width - 10, panel.Width - 10),
+				});
+			} catch { }
             panel.Controls.Add(entryTextGB = new GroupBox()
             {
                 Text = "Entry Dialogue",

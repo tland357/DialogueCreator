@@ -221,6 +221,7 @@ namespace DragAndDropTest
         public abstract void Edit();
         public void UpdateAll()
         {
+			FormReference.getSplitPanel2().SuspendLayout();
 			foreach (DragPanel panel in FormReference.Moveables.Where(x => x != null))
 			{
 				if (panel != null)
@@ -254,6 +255,7 @@ namespace DragAndDropTest
 					}
 				}
 			}
+			FormReference.getSplitPanel2().ResumeLayout();
         }
     }
 }

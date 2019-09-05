@@ -52,13 +52,11 @@ namespace DragAndDropTest
 			this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.AddSplitterBTN = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-			this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -238,8 +236,6 @@ namespace DragAndDropTest
             this.toolStripSeparator11,
             this.toolStripButton1,
             this.toolStripSeparator1,
-            this.AddSplitterBTN,
-            this.toolStripSeparator2,
             this.toolStripButton6,
             this.toolStripSeparator12,
             this.toolStripButton8,
@@ -289,39 +285,6 @@ namespace DragAndDropTest
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
 			// 
-			// AddSplitterBTN
-			// 
-			this.AddSplitterBTN.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.AddSplitterBTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.AddSplitterBTN.Image = ((System.Drawing.Image)(resources.GetObject("AddSplitterBTN.Image")));
-			this.AddSplitterBTN.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.AddSplitterBTN.Name = "AddSplitterBTN";
-			this.AddSplitterBTN.Size = new System.Drawing.Size(114, 24);
-			this.AddSplitterBTN.Text = "Add Splitter (F)";
-			this.AddSplitterBTN.ToolTipText = resources.GetString("AddSplitterBTN.ToolTipText");
-			this.AddSplitterBTN.Click += new System.EventHandler(this.AddSplitter);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
-			// 
-			// toolStripSeparator13
-			// 
-			this.toolStripSeparator13.Name = "toolStripSeparator13";
-			this.toolStripSeparator13.Size = new System.Drawing.Size(6, 27);
-			// 
-			// toolStripButton8
-			// 
-			this.toolStripButton8.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
-			this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton8.Name = "toolStripButton8";
-			this.toolStripButton8.Size = new System.Drawing.Size(167, 24);
-			this.toolStripButton8.Text = "Add New Character (N)";
-			this.toolStripButton8.Click += new System.EventHandler(this.ToolStripButton8_Click);
-			// 
 			// toolStripButton6
 			// 
 			this.toolStripButton6.BackColor = System.Drawing.SystemColors.ActiveCaption;
@@ -337,6 +300,22 @@ namespace DragAndDropTest
 			// 
 			this.toolStripSeparator12.Name = "toolStripSeparator12";
 			this.toolStripSeparator12.Size = new System.Drawing.Size(6, 27);
+			// 
+			// toolStripButton8
+			// 
+			this.toolStripButton8.BackColor = System.Drawing.SystemColors.ActiveCaption;
+			this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
+			this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton8.Name = "toolStripButton8";
+			this.toolStripButton8.Size = new System.Drawing.Size(167, 24);
+			this.toolStripButton8.Text = "Add New Character (N)";
+			this.toolStripButton8.Click += new System.EventHandler(this.ToolStripButton8_Click);
+			// 
+			// toolStripSeparator13
+			// 
+			this.toolStripSeparator13.Name = "toolStripSeparator13";
+			this.toolStripSeparator13.Size = new System.Drawing.Size(6, 27);
 			// 
 			// Window
 			// 
@@ -381,8 +360,6 @@ namespace DragAndDropTest
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton AddSplitterBTN;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripButton GraphicsQualityBTN;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;

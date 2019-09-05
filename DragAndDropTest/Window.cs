@@ -170,9 +170,6 @@ namespace DragAndDropTest
 						CharactersList[i].ReInit();
 					}
 					return;
-				case Keys.F:
-					c = new SplitterDragPanel();
-					break;
 				case Keys.N:
 					if (e.Modifiers == Keys.Alt)
 					{
@@ -219,7 +216,7 @@ namespace DragAndDropTest
         Point previous;
         private void DragStart(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle || e.Button == MouseButtons.Right)
                 previous = MousePosition;
 			else if (e.Button == MouseButtons.Left)
 			{
@@ -229,7 +226,7 @@ namespace DragAndDropTest
 
         private void DragEnd(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle || e.Button == MouseButtons.Right)
             {
                 var transform = MousePosition - new Size(previous);
                 foreach (var moveable in Moveables)
@@ -239,7 +236,7 @@ namespace DragAndDropTest
 
         private void DragContinue(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle || e.Button == MouseButtons.Right)
             {
                 var transform = MousePosition - new Size(previous);
                 foreach (var moveable in Moveables)
