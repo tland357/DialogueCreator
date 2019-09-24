@@ -25,9 +25,13 @@ namespace DragAndDropTest
 			Speaker = null;
 			children = new DragPanel[3];
         }
+		private static string NC(string s)
+		{
+			return s ?? "";
+		}
         public static explicit operator string(DialogueDragPanel p)
         {
-            return p.Speaker.Name + ";" + p.Sprite + ";" + p.EntryText.Replace("\n", "\\") + ";" + p.Dialogue.Replace("\n", "\\") + ";";
+            return NC(p?.Speaker?.Name) + ";" + NC(p?.Sprite) + ";" + NC(p?.EntryText?.Replace("\n", "\\")) + ";" + NC(p?.Dialogue?.Replace("\n", "\\")) + ";";
         }
 		public override void ClearChildren()
 		{

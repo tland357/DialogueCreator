@@ -12,9 +12,8 @@ namespace DragAndDropTest
     class StartDialogueDragPanel : DragPanel
     {
         public string FilePath;
-        public Button WriteToFileBTN, FileOutputBTN, FileInputBTN;
-        public GroupBox WriteToFileGB, FileOutputGB, FileInputGB;
-        public TextBox FileOutputTXT;
+        public Button WriteToFileBTN, FileInputBTN;
+        public GroupBox WriteToFileGB, FileInputGB;
 		private DragPanel children;
         public StartDialogueDragPanel()
         {
@@ -25,28 +24,6 @@ namespace DragAndDropTest
             topConnecter.Enabled = false;
             var panel = FormReference.getSplitPanel1();
             FilePath = null;
-            panel.Controls.Add(FileOutputGB = new GroupBox()
-            {
-                Text = "File Output",
-                Size = new Size(panel.Width - 14, 72),
-                Location = new Point(5, 10),
-            });
-            FileOutputGB.Controls.Add(FileOutputTXT = new TextBox()
-            {
-                Text = "",
-                Location = new Point(5, 28),
-                Font = new System.Drawing.Font("Microsoft Sans Serif", 16F),
-                Width = FileOutputGB.Width - 90,
-            });
-            FileOutputGB.Controls.Add(FileOutputBTN = new Button()
-            {
-                Text = "Open",
-                Location = new Point(FileOutputGB.Width - 86, 28),
-                Font = new System.Drawing.Font("Microsoft Sans Serif", 16F),
-                Width = 78,
-                Height = 32,
-            });
-            FileOutputBTN.Click += new EventHandler(OpenFolder);
             panel.Controls.Add(WriteToFileGB = new GroupBox()
             {
                 Text = "Save File",
@@ -75,7 +52,7 @@ namespace DragAndDropTest
                 Width = FileInputGB.Width - 12,
                 Height = 32
             });
-            WriteToFileBTN.Click += new EventHandler(SaveDialogue);
+            WriteToFileBTN.Click += new EventHandler(OpenFolder);
             FileInputBTN.Click += new EventHandler(LoadDialogue);
         }
 		public override void AddChildren(DragPanel p)
@@ -100,15 +77,17 @@ namespace DragAndDropTest
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = "Dialogue File (*.dlg) | All Files (*.*)";
-            save.ShowDialog();
+            var result = save.ShowDialog();
+			if (result == DialogResult.Cancel) return;
             if (!save.FileName.EndsWith(".dlg")) save.FileName += ".dlg";
-            FileOutputTXT.Text = FilePath = save.FileName;
+            FilePath = save.FileName;
+			SaveDialogue();
         }
         protected override Color GetBackColor()
         {
             return Window.StartBoxCOL;
         }
-        private void SaveDialogue(object sender, EventArgs e)
+        private void SaveDialogue()
         {
             if (string.IsNullOrWhiteSpace(FilePath)) {
                 MessageBox.Show("Please select a file directory");
@@ -141,8 +120,7 @@ namespace DragAndDropTest
 				printed.Add(panel);
 				file.Write("");
 				bool comma = false;
-				string s = (string)panel;
-				foreach (DialogueDragPanel child in panel.Children().Select(x => x as DialogueDragPanel))
+				foreach (DialogueDragPanel child in panel.Children().Where(x => x is DialogueDragPanel))
 				{
 					if (child != null)
 					{
@@ -190,7 +168,12 @@ namespace DragAndDropTest
                 }
             }
 			this.ClearChildren();
-            this.AddChildren(GetTree(strList));
+			try
+			{
+				this.AddChildren(GetTree(strList));
+			} catch (IndexOutOfRangeException)
+			{
+			}
         }
         private DialogueDragPanel GetTree(List<string> strList)
         {
@@ -199,6 +182,7 @@ namespace DragAndDropTest
             for (int i = 0; i < strList.Count; i += 1)
             {
                 var strs = strList[i].Split(";".ToCharArray(), StringSplitOptions.None);
+				if (strs.Length != 6) continue;
 				DialogueDragPanel panel = new DialogueDragPanel();
 				tracker.Add(int.Parse(strs[0]), panel);
 				if (FormReference.CharactersList.Any(x => x.Name == strs[1])) {

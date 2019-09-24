@@ -120,7 +120,7 @@ namespace DragAndDropTest
                         }
 						myBuffer.Render();
 					}
-                    catch (InvalidOperationException ex)
+                    catch (InvalidOperationException)
                     {
 						continue;
                     }
