@@ -10,22 +10,54 @@ namespace DragAndDropTest
 {
     class DialogueDragPanel : DragPanel
     {
-        public string Speaker;
+        public Window.Character Speaker;
         public string Sprite;
         public string EntryText;
         public string Dialogue;
+		private DragPanel[] children;
         GroupBox speakerGB, spriteGB, entryTextGB, dialogueGB;
-        RichTextBox speakerTXT, spriteTXT, entryTextTXT, dialogueTXT;
+        RichTextBox entryTextTXT, dialogueTXT;
+		ComboBox speakerCBB, spriteCBB;
+		PictureBox spritePB;
         public DialogueDragPanel()
         {
-            Speaker = Sprite = EntryText = Dialogue = "";
-            
+            Sprite = EntryText = Dialogue = "";
+			Speaker = null;
+			children = new DragPanel[3];
         }
+		private static string NC(string s)
+		{
+			return s ?? "";
+		}
         public static explicit operator string(DialogueDragPanel p)
         {
-            return "[\n" + p.Speaker + "\n" + p.Sprite + "\n" + p.EntryText.Replace("\n", "\\") + "\n" + p.Dialogue.Replace("\n", "\\") + "\n]";
+            return NC(p?.Speaker?.Name) + ";" + NC(p?.Sprite) + ";" + NC(p?.EntryText?.Replace("\n", "\\")) + ";" + NC(p?.Dialogue?.Replace("\n", "\\")) + ";";
         }
-        public override void Edit()
+		public override void ClearChildren()
+		{
+			for (int i = 0; i < children.Length; i += 1)
+			{
+				children[i] = null;
+			}
+		}
+		public override void AddChildren(DragPanel p)
+		{
+			uint z = (uint)children.Count(x => x != null);
+			children[z < 3 ? z : 2] = p;
+		}
+		public override void childRemove(DragPanel p)
+		{
+			for (int i = 0; i < children.Length; i += 1)
+			{
+				if (p == children[i])
+					children[i] = null;
+			}
+		}
+		public override DragPanel[] Children()
+		{
+			return children;
+		}
+		public override void Edit()
         {
             var panel = FormReference.getSplitPanel1();
             panel.Controls.Add(speakerGB = new GroupBox()
@@ -34,34 +66,45 @@ namespace DragAndDropTest
                 Size = new Size(panel.Width - 14, 80),
                 Location = new Point(5, 10),
             });
-                speakerGB.Controls.Add(speakerTXT = new RichTextBox()
+                speakerGB.Controls.Add(speakerCBB = new ComboBox()
                 {
-                    Text = Speaker,
+                    Text = Speaker?.Name,
                     Location = new Point(5,28),
                     Size = new Size(speakerGB.Width - 14, speakerGB.Height - 44),
                     Font = new System.Drawing.Font("Microsoft Sans Serif", 16F),
                 });
-                speakerTXT.TextChanged += new EventHandler(SpeakerChanged);
-                speakerTXT.KeyDown += new KeyEventHandler(EnterPressedLeave);
+                speakerCBB.TextChanged += new EventHandler(SpeakerChanged);
+				speakerCBB.DropDown += new EventHandler(ShowCharacters);
             panel.Controls.Add(spriteGB = new GroupBox()
             {
                 Text = "Sprite Name",
                 Size = new Size(panel.Width - 14, 80),
                 Location = new Point(5, 95),
             });
-                spriteGB.Controls.Add(spriteTXT = new RichTextBox()
+                spriteGB.Controls.Add(spriteCBB = new ComboBox()
                 {
                     Text = Sprite,
                     Location = new Point(5, 28),
                     Size = new Size(spriteGB.Width - 14, spriteGB.Height - 44),
                     Font = new System.Drawing.Font("Microsoft Sans Serif", 16F),
                 });
-                spriteTXT.TextChanged += new EventHandler(SpriteChanged);
-                spriteTXT.KeyDown += new KeyEventHandler(EnterPressedLeave);
+                spriteCBB.TextChanged += new EventHandler(SpriteChanged);
+				spriteCBB.DropDown += new EventHandler(ShowSprites);
+			try
+			{
+				panel.Controls.Add(spritePB = new PictureBox()
+				{
+
+					Location = new Point(5, 545),
+					Image = Speaker?.Sprites?[Sprite],
+					SizeMode = PictureBoxSizeMode.Zoom,
+					Size = new Size(panel.Width - 10, panel.Width - 10),
+				});
+			} catch { }
             panel.Controls.Add(entryTextGB = new GroupBox()
             {
                 Text = "Entry Dialogue",
-                Size = new Size(panel.Width - 14, 240),
+                Size = new Size(panel.Width - 14, 180),
                 Location = new Point(5, 180),
             });
                 entryTextGB.Controls.Add(entryTextTXT = new RichTextBox()
@@ -75,8 +118,8 @@ namespace DragAndDropTest
             panel.Controls.Add(dialogueGB = new GroupBox()
             {
                 Text = "Speaker Dialogue",
-                Size = new Size(panel.Width - 14, 240),
-                Location = new Point(5, 425),
+                Size = new Size(panel.Width - 14, 180),
+                Location = new Point(5, 365),
             });
                 dialogueGB.Controls.Add(dialogueTXT = new RichTextBox()
                 {
@@ -90,10 +133,15 @@ namespace DragAndDropTest
         }
         private void SpeakerChanged(object sender, EventArgs e)
         {
-            changeText(speakerTXT);
-            Speaker = speakerTXT.Text;
+			if (FormReference.CharactersList.Any(x => x.Name == speakerCBB.Text))
+			{
+				this.Speaker = FormReference.CharactersList.First(x => x.Name == speakerCBB.Text);
+			} else
+			{
+				MessageBox.Show("Cannot find character " + speakerCBB.Text);
+			}
         }
-        private void changeText(RichTextBox r)
+        private void changeText(ComboBox r)
         {
             if (r.Text.Contains('\n'))
                 r.Text = r.Text.Replace("\n", "");
@@ -104,28 +152,35 @@ namespace DragAndDropTest
         }
         private void EnterPressedLeave(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                if (sender == speakerTXT)
-                    spriteTXT.Focus();
-                if (sender == spriteTXT)
-                    entryTextTXT.Focus();
-                (sender as RichTextBox).Text = (sender as RichTextBox).Text.Replace("\n", "").Replace("\r", "");
-            }
             if (e.KeyCode == Keys.Tab)
             {
-                if (sender == speakerTXT)
-                    spriteTXT.Focus();
-                if (sender == spriteTXT)
-                    entryTextTXT.Focus();
                 if (sender == entryTextTXT)
                     dialogueTXT.Focus();
             }
         }
+		private void ShowCharacters(object sender, EventArgs e)
+		{
+			speakerCBB.Items.Clear();
+			speakerCBB.Items.AddRange(FormReference.CharactersList.Select(x => x.Name).ToArray());
+		}
+		private void ShowSprites(object sender, EventArgs e)
+		{
+			if (Speaker != null)
+			{
+				spriteCBB.Items.Clear();
+				spriteCBB.Items.AddRange(Speaker.Sprites.Keys.ToArray());
+			}
+		}
         private void SpriteChanged(object sender, EventArgs e)
         {
-            changeText(spriteTXT);
-            Sprite = spriteTXT.Text;
+            Sprite = spriteCBB.Text;
+			try
+			{
+				spritePB.Image = Speaker.Sprites[Sprite];
+			} catch
+			{
+				MessageBox.Show("Sprite Not Found");
+			}
         }
         private void EntryTextChanged(object sender, EventArgs e)
         {

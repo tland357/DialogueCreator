@@ -13,13 +13,12 @@ namespace DragAndDropTest
         protected Window FormReference;
         Point previous;
         public static DragPanel Foc = null;
-        public List<DragPanel> Children;
+        private List<DragPanel> children;
         public Button b, topConnecter, topDisconnecter, removeChildren;
         protected Panel drag;
         public static bool dragging;
         public DragPanel()
         {
-            Children = new List<DragPanel>();
             Width = 100;
             Height = 124;
             BorderStyle = BorderStyle.Fixed3D;
@@ -109,13 +108,15 @@ namespace DragAndDropTest
         //Sprotected abstract Color GetBackColor();
         public void dragContinue(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                var transform = MousePosition - new Size(previous);
-                this.Location += new Size(transform);
-                previous += new Size(transform);
-            }
-
+			if (dragging)
+			{
+				if (e.Button == MouseButtons.Left)
+				{
+					var transform = MousePosition - new Size(previous);
+					this.Location += new Size(transform);
+					previous += new Size(transform);
+				}
+			}
         }
         public void dragEnd(object sender, MouseEventArgs e)
         {
@@ -140,6 +141,9 @@ namespace DragAndDropTest
             Edit();
             UpdateAll();
         }
+		public abstract DragPanel[] Children();
+		public abstract void ClearChildren();
+		public abstract void AddChildren(DragPanel p);
         public virtual void Connect(object sender, EventArgs e)
         {
             if (Foc != null)
@@ -148,13 +152,13 @@ namespace DragAndDropTest
                 {
                     if (Foc != this)
                     {
-                        if (!Foc.Children.Contains(this))
+                        if (!Foc.Children().Contains(this))
                         {
-                            if (!this.Children.Contains(Foc))
+                            if (!this.Children().Contains(Foc))
                             {
-                                
-                                Foc.Children.Clear();
-                                Foc.Children.Add(this);
+
+								Foc.ClearChildren();
+                                Foc.AddChildren(this);
                                 UpdateAll();
                             }
                         }
@@ -164,12 +168,12 @@ namespace DragAndDropTest
                 {
                     if (Foc != this)
                     {
-                        if (!Foc.Children.Contains(this))
+                        if (!Foc.Children().Contains(this))
                         {
-                            if (!this.Children.Contains(Foc))
+                            if (!this.Children().Contains(Foc))
                             {
-                                this.Children.Clear();
-                                this.Children.Add(Foc);
+								this.ClearChildren();
+                                this.AddChildren(Foc);
                                 UpdateAll();
                             }
                         }
@@ -179,17 +183,17 @@ namespace DragAndDropTest
                 {
                     if (Foc != this)
                     {
-                        if (!Foc.Children.Contains(this))
+                        if (!Foc.Children().Contains(this))
                         {
-                            if (!this.Children.Contains(Foc))
+                            if (!this.Children().Contains(Foc))
                             {
                                 if (this.Location.Y > Foc.Location.Y)
                                 {
-                                    Foc.Children.Add(this);
+									Foc.AddChildren(this);
                                     UpdateAll();
                                 } else
                                 {
-                                    this.Children.Add(Foc);
+									this.AddChildren(Foc);
                                     UpdateAll();
                                 }
                             }
@@ -198,6 +202,7 @@ namespace DragAndDropTest
                 }
             }
         }
+		public abstract void childRemove(DragPanel p);
         public void Disconnect(object sender, EventArgs e)
         {
             FormReference.Disconnect(this);
@@ -205,10 +210,10 @@ namespace DragAndDropTest
         }
         public void RemoveChildren(object sender, EventArgs e)
         {
-            while (Children.Count > 0)
-                foreach (var child in Children)
+            while (Children().Count(x => x != null) > 0)
+                foreach (var child in Children().Where(x => x != null))
                 {
-                    this.Children.Remove(child);
+					this.childRemove(child);
                     break;
                 }
             UpdateAll();
@@ -216,30 +221,41 @@ namespace DragAndDropTest
         public abstract void Edit();
         public void UpdateAll()
         {
-            foreach (DragPanel panel in FormReference.Moveables)
-            {
-                if (panel.Children.Count > 0)
-                {
-                    panel.removeChildren.Enabled = true;
-                } else
-                {
-                    panel.removeChildren.Enabled = false;
-                }
-                if (FormReference.Moveables.Any(x => (x as DragPanel).Children.Contains(panel)))
-                {
-                    panel.topDisconnecter.Enabled = true;
-                } else
-                {
-                    panel.topDisconnecter.Enabled = false;
-                }
-                if (panel == Foc || panel.Children.Contains(Foc) || Foc.Children.Contains(panel) || FormReference.Moveables.Count <= 1)
-                {
-                    panel.topConnecter.Enabled = false;
-                } else
-                {
-                    panel.topConnecter.Enabled = true;
-                }
-            }
+			FormReference.getSplitPanel2().SuspendLayout();
+			foreach (DragPanel panel in FormReference.Moveables.Where(x => x != null))
+			{
+				if (panel != null)
+				{
+					if (panel.Children().Count(x => x != null) > 0)
+					{
+						panel.removeChildren.Enabled = true;
+					}
+					else
+					{
+						panel.removeChildren.Enabled = false;
+					}
+					if (FormReference.Moveables.Any(x => (x as DragPanel).Children().Contains(panel)))
+					{
+						panel.topDisconnecter.Enabled = true;
+					}
+					else
+					{
+						panel.topDisconnecter.Enabled = false;
+					}
+					if (Foc.Children() != null && panel.Children() != null)
+					{
+						if (panel == Foc || panel.Children().Contains(Foc) || Foc.Children().Contains(panel) || FormReference.Moveables.Count <= 1)
+						{
+							panel.topConnecter.Enabled = false;
+						}
+						else
+						{
+							panel.topConnecter.Enabled = true;
+						}
+					}
+				}
+			}
+			FormReference.getSplitPanel2().ResumeLayout();
         }
     }
 }
